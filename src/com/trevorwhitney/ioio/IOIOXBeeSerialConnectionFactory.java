@@ -3,7 +3,7 @@ package com.trevorwhitney.ioio;
 import ioio.lib.api.exception.ConnectionLostException;
 import ioio.lib.api.exception.IncompatibilityException;
 
-public class IOIOXbeeSerialConnectionFactory {
+public class IOIOXBeeSerialConnectionFactory {
 	
 	public static final int RX_PIN = 4;
 	public static final int TX_PIN = 5;
