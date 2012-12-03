@@ -15,7 +15,7 @@ import android.os.Handler;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
-public class IOIOFinalProject extends IOIOActivity {
+public class XBeeBimBap extends IOIOActivity {
 	TextView uartValue;
 	ToggleButton toggleButton;
 	String uartRecievedString = "Waiting...";
