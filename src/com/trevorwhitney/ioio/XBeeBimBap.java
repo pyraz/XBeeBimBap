@@ -43,8 +43,12 @@ public class XBeeBimBap extends IOIOActivity {
 		
 		Uart uart;
 		InputStream uartIn;
-		byte[] uartRecievedBytes = new byte[10];
-		
+		int startDelimiter = 0;
+		int size = 0;
+		byte[] packetSize = new byte[2];
+		byte[] packet = null;
+		int checksum = 0;
+		int[] fullPacket = null;
 		final static int UART_RX_PIN = 4;
 		final static int UART_TX_PIN = 5;
 		final static int UART_BAUD = 57600;
@@ -60,17 +64,41 @@ public class XBeeBimBap extends IOIOActivity {
 		
 		@Override
 		public void loop() {
+			size = 0;
 			try {
 				Thread.sleep(1000);
-				uartIn.read(uartRecievedBytes);
+				startDelimiter = uartIn.read();
+				if (startDelimiter == 0x7e) {
+					uartIn.read(packetSize);
+					size = (int)packetSize[0]*256 + (int)packetSize[1];
+					if (size > 0) {
+						packet = new byte[size];
+						uartIn.read(packet);
+						checksum = uartIn.read();
+					}
+				}
 			} catch (IOException e) {
 				e.printStackTrace();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			uartRecievedString = new String(uartRecievedBytes);
-			uartRecievedString = uartRecievedString.replace(',','\n');
-			handler.post(updateResults);
+			if (size > 0) {
+				fullPacket = new int[4 + size];
+				fullPacket[0] = startDelimiter;
+				fullPacket[1] = (int) packetSize[0] & 0xFF;
+				fullPacket[2] = (int) packetSize[1] & 0xFF;
+				for (int i = 0; i < size; i++) {
+					fullPacket[3 + i] = (int) packet[i] & 0xFF;
+				}
+				fullPacket[3 + size] = checksum; 
+				uartRecievedString = "Packet size: " + size + "\n";
+				uartRecievedString += "Packet: [";
+				for (int i = 0; i < fullPacket.length; i++) {
+					uartRecievedString += fullPacket[i] + ", "; 
+				}
+				uartRecievedString += "]\n";
+				handler.post(updateResults);
+			}
 		}
 	}
 
