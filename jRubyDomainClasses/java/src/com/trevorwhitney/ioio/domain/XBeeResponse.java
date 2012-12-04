@@ -57,6 +57,11 @@ public class XBeeResponse extends RubyObject  {
             "    @payload.size\n" +
             "  end\n" +
             "\n" +
+            "  java_signature 'String toString()'\n" +
+            "  def to_s\n" +
+            "    super\n" +
+            "  end\n" +
+            "\n" +
             "end").toString();
         __ruby__.executeScript(source, "lib/XBeeResponse.rb");
         RubyClass metaclass = __ruby__.getClass("XBeeResponse");
@@ -109,6 +114,14 @@ public class XBeeResponse extends RubyObject  {
 
         IRubyObject ruby_result = RuntimeHelpers.invoke(__ruby__.getCurrentContext(), this, "length");
         return (Object)ruby_result.toJava(Object.class);
+
+    }
+
+    
+    public String toString() {
+
+        IRubyObject ruby_result = RuntimeHelpers.invoke(__ruby__.getCurrentContext(), this, "to_s");
+        return (String)ruby_result.toJava(String.class);
 
     }
 

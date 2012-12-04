@@ -42,4 +42,9 @@ class XBeeResponse
     @payload.size
   end
 
+  java_signature 'String toString()'
+  def to_s
+    super
+  end
+
 end

@@ -16,6 +16,8 @@ import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import com.trevorwhitney.ioio.domain.XBeeResponse;
+import com.trevorwhitney.ioio.domain.XBeeResponseFactory;
+import com.trevorwhitney.ioio.domain.ReceivePacket16Response;
 
 public class XBeeBimBap extends IOIOActivity {
 	TextView uartValue;
@@ -93,12 +95,18 @@ public class XBeeBimBap extends IOIOActivity {
 					fullPacket[3 + i] = (int) packet[i] & 0xFF;
 				}
 				fullPacket[3 + size] = checksum; 
+				/*
 				uartRecievedString = "Packet size: " + size + "\n";
 				uartRecievedString += "Packet: [";
 				for (int i = 0; i < fullPacket.length; i++) {
 					uartRecievedString += fullPacket[i] + ", "; 
 				}
 				uartRecievedString += "]\n";
+				*/
+				XBeeResponse response = 
+						(XBeeResponse)XBeeResponseFactory
+						.generate(fullPacket);
+				uartRecievedString = response.toString();
 				handler.post(updateResults);
 			}
 		}
