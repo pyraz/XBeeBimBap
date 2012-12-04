@@ -3,6 +3,10 @@ package com.trevorwhitney.ioio;
 import java.io.IOException;
 import java.io.InputStream;
 
+import com.trevorwhitney.ioio.domain.XBeeResponse;
+import com.trevorwhitney.ioio.domain.XBeeResponseFactory;
+import com.trevorwhitney.ioio.exception.InvalidPacketException;
+
 import ioio.lib.api.DigitalOutput;
 import ioio.lib.api.IOIO;
 import ioio.lib.api.Uart;
@@ -48,7 +52,7 @@ public class XBeeBimBap extends IOIOActivity {
 		byte[] packetSize = new byte[2];
 		byte[] packet = null;
 		int checksum = 0;
-		int[] fullPacket = null;
+		Integer[] fullPacket = null;
 		final static int UART_RX_PIN = 4;
 		final static int UART_TX_PIN = 5;
 		final static int UART_BAUD = 57600;
@@ -83,20 +87,28 @@ public class XBeeBimBap extends IOIOActivity {
 				e.printStackTrace();
 			}
 			if (size > 0) {
-				fullPacket = new int[4 + size];
+				fullPacket = new Integer[4 + size];
 				fullPacket[0] = startDelimiter;
 				fullPacket[1] = (int) packetSize[0] & 0xFF;
 				fullPacket[2] = (int) packetSize[1] & 0xFF;
 				for (int i = 0; i < size; i++) {
 					fullPacket[3 + i] = (int) packet[i] & 0xFF;
 				}
-				fullPacket[3 + size] = checksum; 
+				fullPacket[3 + size] = checksum;
 				uartRecievedString = "Packet size: " + size + "\n";
 				uartRecievedString += "Packet: [";
 				for (int i = 0; i < fullPacket.length; i++) {
 					uartRecievedString += fullPacket[i] + ", "; 
 				}
 				uartRecievedString += "]\n";
+				/*try {
+					XBeeResponse response = 
+							XBeeResponseFactory.getInstance(fullPacket);
+					uartRecievedString += "Response: " + response.toString();
+				} catch (InvalidPacketException e) {
+					e.printStackTrace();
+					uartRecievedString = "Exception occured";
+				}*/
 				handler.post(updateResults);
 			}
 		}
