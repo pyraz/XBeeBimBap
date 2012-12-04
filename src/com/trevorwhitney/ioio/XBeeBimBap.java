@@ -15,6 +15,8 @@ import android.os.Handler;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
+import com.trevorwhitney.ioio.domain.XBeeResponse;
+
 public class XBeeBimBap extends IOIOActivity {
 	TextView uartValue;
 	ToggleButton toggleButton;
