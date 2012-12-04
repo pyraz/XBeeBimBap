@@ -1,4 +1,6 @@
-require_relative 'XBeeResponse'
+require 'XBeeResponse'
+require 'java'
+java_package 'com.trevorwhitney.ioio.domain'
 
 class ReceivePacket16Response < XBeeResponse
   attr_reader :source_addr, :rssi, :options, :data
@@ -17,7 +19,7 @@ class ReceivePacket16Response < XBeeResponse
   private
 
   def parse_payload
-    @source_addr = "#{@payload[0].to_s(2)}#{@payload[1].to_s(2)}".to_i(2)
+    @source_addr = @payload[0] * 256 + @payload[1]
     @rssi = @payload[2]
     @options = @payload[3]
     data_end = length - 1

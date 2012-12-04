@@ -1,6 +1,8 @@
 require 'pry'
-require_relative 'XBeeResponse'
-require_relative 'ReceivePacket16Response'
+require 'XBeeResponse'
+require 'ReceivePacket16Response'
+require 'java'
+java_package 'com.trevorwhitney.ioio.domain'
 
 class XBeeResponseFactory
 
@@ -40,11 +42,11 @@ class XBeeResponseFactory
   # @raise [InvalidPacketLengthError] if the declared packet length is
   #   not equal to the actual size in bytes of the parsed out payload.
   def self.parse_packet
-    if @packet[0] != "7e".to_i(16)
+    if @packet[0] != 0x7e
       raise InvalidPacketError.new("Invalid start delimeter")
     end
 
-    @length = @packet[1] + @packet[2]
+    @length = @packet[1] * 256 + @packet[2]
     @api_id = @packet[3]
     @checksum = @packet[-1]
 

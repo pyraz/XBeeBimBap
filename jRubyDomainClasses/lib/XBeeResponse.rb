@@ -1,3 +1,5 @@
+require 'java'
+java_package 'com.trevorwhitney.ioio.domain'
 # @!attribute api_id [r]
 #   @return [Integer] The API type ID of the packet.
 # @!attribute payload[r]
@@ -22,6 +24,7 @@ class XBeeResponse
   # including api id and checksum), keep only the lowest 8 bits, if it 
   # equals 0xFF, or 255, then the packet is valid.
   #
+  java_signature 'boolean isValid()'
   def valid?
     value = @payload.inject {|sum,x| sum+x } + @checksum + @api_id
 

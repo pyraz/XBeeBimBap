@@ -1,0 +1,23 @@
+require 'rawr'
+
+namespace :java do
+  desc "initialize folder structure for java files"
+  task [:init] do
+    unless File.directory?("java/src")
+      sh "mkdir -p java/src"
+      sh "mkdir -p java/bin"
+    end
+  end
+
+  desc "create java source files from ruby source"
+  task :source => [:init] do
+    Dir.glob('lib/*.rb') do |f|
+      sh "jrubyc --java -t java/src #{f}"
+    end
+  end
+
+  desc "compile java source to class files"
+  task :jar => [:source] do
+    sh "jar -cf java/XBeeBimBapDomain.jar java/src"
+  end
+end
