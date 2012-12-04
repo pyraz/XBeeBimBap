@@ -26,6 +26,7 @@ public class ReceivePacket16Response extends RubyObject  {
             "    @api_id = 0x81\n" +
             "  end\n" +
             "\n" +
+            "  java_signature 'String toString()'\n" +
             "  def to_s\n" +
             "    message = @data.map {|x| x.chr }\n" +
             "    message.join\n" +
@@ -81,10 +82,10 @@ public class ReceivePacket16Response extends RubyObject  {
     }
 
     
-    public Object to_s() {
+    public String toString() {
 
         IRubyObject ruby_result = RuntimeHelpers.invoke(__ruby__.getCurrentContext(), this, "to_s");
-        return (Object)ruby_result.toJava(Object.class);
+        return (String)ruby_result.toJava(String.class);
 
     }
 

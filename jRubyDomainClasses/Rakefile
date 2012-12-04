@@ -15,7 +15,16 @@ namespace :java do
   end
 
   desc "compile java source to class files"
-  task :jar => [:source] do
-    sh "jar -cf java/XBeeBimBapDomain.jar java/src"
+  task :compile => [:source] do
+    Dir.glob('lib/*.rb') do |f|
+      basename = File.basename(f, '.rb')
+      sh "javac -cp java/lib/jruby-complete.jar -d java/bin " +
+        "java/src/com/trevorwhitney/ioio/domain/#{basename}.java"
+    end
+  end
+
+  desc "create jar from java class files"
+  task :jar => [:compile] do
+    sh "jar -cf java/XBeeBimBapDomain.jar -C java/bin com"
   end
 end

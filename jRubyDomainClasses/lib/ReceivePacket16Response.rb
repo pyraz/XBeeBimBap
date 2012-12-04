@@ -11,6 +11,7 @@ class ReceivePacket16Response < XBeeResponse
     @api_id = 0x81
   end
 
+  java_signature 'String toString()'
   def to_s
     message = @data.map {|x| x.chr }
     message.join
