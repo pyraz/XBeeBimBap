@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">IOIO Final Project</string>
-    <string name="seekbar_label">Move to control the position:</string>
-    <string name="analog_label">Analog reading:</string>
+    <string name="app_name">XBeeBimBap</string>
+    <string name="log_data">Log Data</string>
+    <string name="connect_ioio">
+    		Please connect the IOIO interface
+    </string>
 </resources>

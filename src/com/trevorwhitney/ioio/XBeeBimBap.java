@@ -2,9 +2,12 @@ package com.trevorwhitney.ioio;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.trevorwhitney.ioio.domain.XBeeResponse;
 import com.trevorwhitney.ioio.domain.XBeeResponseFactory;
+import com.trevorwhitney.ioio.domain.XBeePacket;
 import com.trevorwhitney.ioio.exception.InvalidPacketException;
 
 import ioio.lib.api.DigitalOutput;
@@ -16,32 +19,35 @@ import ioio.lib.util.IOIOLooper;
 import ioio.lib.util.android.IOIOActivity;
 import android.os.Bundle;
 import android.os.Handler;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
 public class XBeeBimBap extends IOIOActivity {
-	TextView uartValue;
-	ToggleButton toggleButton;
-	String uartRecievedString = "Waiting...";
+	TextView ioioMessage;
+	ToggleButton logData;
+	ListView data;
+	String packetString = "";
 	Handler handler = new Handler();
-	DigitalOutput led;
+	List<XBeePacket> packets = new ArrayList<XBeePacket>();
+	ArrayAdapter<XBeePacket> packetsAdapter = null;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
 	    setContentView(R.layout.main);
-	
-	    uartValue = (TextView)findViewById(R.id.uart);
-	    toggleButton = (ToggleButton)findViewById(R.id.toggleButton);
+	    
+	    //ioioMessage = (TextView)findViewById(R.id.ioio_message);
+	    logData = (ToggleButton)findViewById(R.id.log_data);
+	    data = (ListView)findViewById(R.id.data);
+	    
+	    packetsAdapter = new ArrayAdapter<XBeePacket>(this,
+	    		android.R.layout.simple_list_item_1, packets);
+	    data.setAdapter(packetsAdapter);
 	
 	    enableUi(false);
 	}
-	
-	final Runnable updateResults = new Runnable() {
-		public void run() {
-			uartValue.append(uartRecievedString);
-		}
-	};
 	
 	class Looper extends BaseIOIOLooper {
 		
@@ -61,9 +67,8 @@ public class XBeeBimBap extends IOIOActivity {
 		public void setup() throws ConnectionLostException {
 			uart = ioio_.openUart(UART_RX_PIN, UART_TX_PIN, UART_BAUD, 
 					Uart.Parity.NONE, Uart.StopBits.ONE);
-			led = ioio_.openDigitalOutput(IOIO.LED_PIN, true);
 			uartIn = uart.getInputStream();
-			enableUi(true);
+			//enableUi(true);
 		}
 		
 		@Override
@@ -95,21 +100,32 @@ public class XBeeBimBap extends IOIOActivity {
 					fullPacket[3 + i] = (int) packet[i] & 0xFF;
 				}
 				fullPacket[3 + size] = checksum;
-				uartRecievedString = "Packet size: " + size + "\n";
-				uartRecievedString += "Packet: [";
-				for (int i = 0; i < fullPacket.length; i++) {
-					uartRecievedString += fullPacket[i] + ", "; 
-				}
-				uartRecievedString += "]\n";
-				/*try {
+				
+				/*
+				 * Next I would like to actually parse out the information from
+				 * the packet. Unfortunately, this currently isn't working, and 
+				 * there's currently no way to debug it without either 
+				 * A) implementing bluetooth on the IOIO or
+				 * B) rooting my device, since I have no access to Logcat while
+				 * the IOIO is using up the Android's USB port. Therefore, I'm
+				 * stuck with just writing raw packets to the list for now.
+				
+				try {
 					XBeeResponse response = 
 							XBeeResponseFactory.getInstance(fullPacket);
-					uartRecievedString += "Response: " + response.toString();
+					uartRecievedString += "API Id: " + response.getApiId();
 				} catch (InvalidPacketException e) {
 					e.printStackTrace();
 					uartRecievedString = "Exception occured";
-				}*/
-				handler.post(updateResults);
+				}
+				*
+				* In the meantime, I've created a transitional XBeePacket
+				* class that will have to handle the magic for now
+				*
+				*/
+				
+				XBeePacket newPacket = new XBeePacket(fullPacket);
+				packetsAdapter.add(newPacket);
 			}
 		}
 	}
@@ -120,12 +136,24 @@ public class XBeeBimBap extends IOIOActivity {
 	}
 
 	private void enableUi(final boolean enable) {
-		runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				toggleButton.setEnabled(enable);
-			}
-		});
+		if (enable) {
+			runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					//ioioMessage.setEnabled(false);
+					//data.setEnabled(true);
+				}
+			});
+		}
+		else {
+			runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					//ioioMessage.setEnabled(true);
+					//data.setEnabled(false);
+				}
+			});
+		}
 	}
 	
 }

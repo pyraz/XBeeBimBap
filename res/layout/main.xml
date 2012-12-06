@@ -1,25 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent" >
-	<LinearLayout 
-	    android:orientation="vertical"
-	    android:layout_width="fill_parent"
-	    android:layout_height="wrap_content">
-		<ToggleButton
-			android:id="@+id/toggleButton"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_gravity="center_horizontal"
-			android:layout_margin="20dp"
-			android:textOff="Led is OFF"
-			android:textOn="Led is ON" />
-		<TextView android:id="@+id/uart"
-				android:layout_width="wrap_content"
-	      android:layout_height="wrap_content"
-	      android:text="Waiting..."
-	      android:textColor="#FFFFFF"
-	      android:textSize="20sp"
-	      android:textStyle="bold" />
-	</LinearLayout>
-</ScrollView>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="wrap_content"
+	android:orientation="vertical" >
+	<ListView
+		android:id="@+id/data"
+		android:layout_width="fill_parent"
+		android:layout_height="0dp"
+		android:layout_gravity="center"
+		android:layout_weight="1" />
+	<ToggleButton
+		android:id="@+id/log_data"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_gravity="center"
+		android:text="@string/log_data" />
+</LinearLayout>

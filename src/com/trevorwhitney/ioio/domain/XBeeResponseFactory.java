@@ -9,7 +9,7 @@ public class XBeeResponseFactory {
 	public static XBeeResponse getInstance(Integer[] packet) 
 			throws InvalidPacketException {
 		int[] payload = parsePacket(packet);
-		if (apiId == 0x81) {
+		if (apiId == (int)0x81) {
 			return new XBeeResponseRXPacket16(payload, checksum);
 		}
 		else {
@@ -18,7 +18,7 @@ public class XBeeResponseFactory {
 	}
 	
 	public static int[] parsePacket(Integer[] packet) throws InvalidPacketException {
-		if (packet[0] != 0x7e) {
+		if (!packet[0].equals((int)0x7e)) {
 			throw new InvalidPacketException(
 					"Supplied packet has an invalid start delimeter");
 		}
