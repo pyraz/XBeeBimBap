@@ -56,7 +56,7 @@ public class XBeeBimBap extends IOIOActivity {
 	    enableUi(false);
 	}
 	
-	final Runnable updateResults = new Runnable() {
+	final Runnable updatePacketsList = new Runnable() {
 		public void run() {
 			if (currentPacket != null) {
 				packets.add(currentPacket);
@@ -142,7 +142,7 @@ public class XBeeBimBap extends IOIOActivity {
 				*/
 				
 				currentPacket = new XBeePacket(fullPacket);
-				handler.post(updateResults);
+				handler.post(updatePacketsList);
 			}
 		}
 
