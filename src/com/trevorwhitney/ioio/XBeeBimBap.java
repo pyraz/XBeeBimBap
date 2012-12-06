@@ -32,6 +32,7 @@ public class XBeeBimBap extends IOIOActivity {
 	Handler handler = new Handler();
 	List<XBeePacket> packets = new ArrayList<XBeePacket>();
 	ArrayAdapter<XBeePacket> packetsAdapter = null;
+	XBeePacket currentPacket = null;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -46,8 +47,16 @@ public class XBeeBimBap extends IOIOActivity {
 	    		android.R.layout.simple_list_item_1, packets);
 	    data.setAdapter(packetsAdapter);
 	
-	    enableUi(false);
+	    //enableUi(false);
 	}
+	
+	final Runnable updateResults = new Runnable() {
+		public void run() {
+			if (currentPacket != null) {
+				packets.add(currentPacket);
+			}
+		}
+	};
 	
 	class Looper extends BaseIOIOLooper {
 		
@@ -124,8 +133,8 @@ public class XBeeBimBap extends IOIOActivity {
 				*
 				*/
 				
-				XBeePacket newPacket = new XBeePacket(fullPacket);
-				packetsAdapter.add(newPacket);
+				currentPacket = new XBeePacket(fullPacket);
+				handler.post(updateResults);
 			}
 		}
 	}
