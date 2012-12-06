@@ -22,6 +22,7 @@ import android.os.Handler;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 public class XBeeBimBap extends IOIOActivity {
@@ -46,19 +47,26 @@ public class XBeeBimBap extends IOIOActivity {
 	    packetsAdapter = new ArrayAdapter<XBeePacket>(this,
 	    		android.R.layout.simple_list_item_1, packets);
 	    data.setAdapter(packetsAdapter);
+	    
+			Integer[] samplePacket = {126, 0, 19, 129, 0, 2, 23, 0, 72, 101, 108, 
+			    108, 111, 32, 102, 114, 111, 109, 32, 50, 13, 10, 52};
+			XBeePacket sampleXBeePacket = new XBeePacket(samplePacket);
+			packets.add(sampleXBeePacket);
 	
-	    //enableUi(false);
+	    enableUi(false);
 	}
 	
 	final Runnable updateResults = new Runnable() {
 		public void run() {
 			if (currentPacket != null) {
 				packets.add(currentPacket);
+				packetsAdapter.notifyDataSetChanged();
+				currentPacket = null;
 			}
 		}
 	};
 	
-	class Looper extends BaseIOIOLooper {
+	class Looper implements IOIOLooper {
 		
 		Uart uart;
 		InputStream uartIn;
@@ -73,11 +81,11 @@ public class XBeeBimBap extends IOIOActivity {
 		final static int UART_BAUD = 57600;
 		
 		@Override
-		public void setup() throws ConnectionLostException {
-			uart = ioio_.openUart(UART_RX_PIN, UART_TX_PIN, UART_BAUD, 
+		public void setup(IOIO ioio) throws ConnectionLostException {
+			uart = ioio.openUart(UART_RX_PIN, UART_TX_PIN, UART_BAUD, 
 					Uart.Parity.NONE, Uart.StopBits.ONE);
 			uartIn = uart.getInputStream();
-			//enableUi(true);
+			enableUi(true);
 		}
 		
 		@Override
@@ -137,6 +145,21 @@ public class XBeeBimBap extends IOIOActivity {
 				handler.post(updateResults);
 			}
 		}
+
+		@Override
+		public void disconnected() {
+			Toast.makeText(getApplicationContext(), 
+					"Please reconnect IOIO device",
+					Toast.LENGTH_LONG).show();
+			enableUi(false);
+		}
+
+		@Override
+		public void incompatible() {
+			Toast.makeText(getApplicationContext(), 
+					"Incompatible IOIO device detected",
+					Toast.LENGTH_LONG).show();
+		}
 	}
 
 	@Override
@@ -149,8 +172,7 @@ public class XBeeBimBap extends IOIOActivity {
 			runOnUiThread(new Runnable() {
 				@Override
 				public void run() {
-					//ioioMessage.setEnabled(false);
-					//data.setEnabled(true);
+					logData.setEnabled(true);
 				}
 			});
 		}
@@ -158,8 +180,7 @@ public class XBeeBimBap extends IOIOActivity {
 			runOnUiThread(new Runnable() {
 				@Override
 				public void run() {
-					//ioioMessage.setEnabled(true);
-					//data.setEnabled(false);
+					logData.setEnabled(false);
 				}
 			});
 		}
