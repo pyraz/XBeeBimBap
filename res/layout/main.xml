@@ -14,5 +14,6 @@
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_gravity="center"
-		android:text="@string/log_data" />
+		android:textOff="@string/log_data"
+		android:textOn="@string/logging_data" />
 </LinearLayout>

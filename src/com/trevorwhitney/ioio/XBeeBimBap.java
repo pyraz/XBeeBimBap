@@ -5,20 +5,16 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.trevorwhitney.ioio.domain.XBeeResponse;
-import com.trevorwhitney.ioio.domain.XBeeResponseFactory;
 import com.trevorwhitney.ioio.domain.XBeePacket;
-import com.trevorwhitney.ioio.exception.InvalidPacketException;
 
-import ioio.lib.api.DigitalOutput;
 import ioio.lib.api.IOIO;
 import ioio.lib.api.Uart;
 import ioio.lib.api.exception.ConnectionLostException;
-import ioio.lib.util.BaseIOIOLooper;
 import ioio.lib.util.IOIOLooper;
 import ioio.lib.util.android.IOIOActivity;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -54,6 +50,11 @@ public class XBeeBimBap extends IOIOActivity {
 			packets.add(sampleXBeePacket);
 	
 	    enableUi(false);
+	    
+	    if (!logData.isEnabled()) {
+	    	Toast.makeText(getApplicationContext(), "Please connect IOIO device",
+						Toast.LENGTH_LONG).show();
+	    }
 	}
 	
 	final Runnable updatePacketsList = new Runnable() {
@@ -117,29 +118,6 @@ public class XBeeBimBap extends IOIOActivity {
 					fullPacket[3 + i] = (int) packet[i] & 0xFF;
 				}
 				fullPacket[3 + size] = checksum;
-				
-				/*
-				 * Next I would like to actually parse out the information from
-				 * the packet. Unfortunately, this currently isn't working, and 
-				 * there's currently no way to debug it without either 
-				 * A) implementing bluetooth on the IOIO or
-				 * B) rooting my device, since I have no access to Logcat while
-				 * the IOIO is using up the Android's USB port. Therefore, I'm
-				 * stuck with just writing raw packets to the list for now.
-				
-				try {
-					XBeeResponse response = 
-							XBeeResponseFactory.getInstance(fullPacket);
-					uartRecievedString += "API Id: " + response.getApiId();
-				} catch (InvalidPacketException e) {
-					e.printStackTrace();
-					uartRecievedString = "Exception occured";
-				}
-				*
-				* In the meantime, I've created a transitional XBeePacket
-				* class that will have to handle the magic for now
-				*
-				*/
 				
 				currentPacket = new XBeePacket(fullPacket);
 				handler.post(updatePacketsList);
