@@ -1,7 +1,5 @@
 package com.trevorwhitney.ioio.domain;
 
-import java.util.ArrayList;
-
 public enum XBeePacketType {
 	UNKNOWN(-1),
 	MODEM_STATUS(0x8A),

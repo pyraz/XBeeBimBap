@@ -1,7 +1,5 @@
 package com.trevorwhitney.ioio.domain;
 
-import java.util.ArrayList;
-
 import com.trevorwhitney.ioio.exception.InvalidPacketException;
 
 public class XBeePacket {

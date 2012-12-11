@@ -18,9 +18,7 @@ public class XBeePacketHelper extends SQLiteOpenHelper {
 
 	@Override
 	public void onCreate(SQLiteDatabase db) {
-		db.execSQL("CREATE TABLE xbee_packets " +
-				"(_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-				"packet TEXT, packet_type INTEGER)");
+		createDatabase(db);
 	}
 
 	@Override
@@ -52,6 +50,22 @@ public class XBeePacketHelper extends SQLiteOpenHelper {
 	public Cursor getAll() {
 		return getReadableDatabase().rawQuery("SELECT _id, packet, " +
 				"packet_type FROM xbee_packets", null);
+	}
+	
+	public void clearDatabase() {
+		SQLiteDatabase db = getWritableDatabase();
+		deleteDatabase(db);
+		createDatabase(db);
+	}
+	
+	public void deleteDatabase(SQLiteDatabase db) {
+		db.execSQL("DROP TABLE IF EXISTS xbee_packets");
+	}
+	
+	public void createDatabase(SQLiteDatabase db) {
+		db.execSQL("CREATE TABLE xbee_packets " +
+				"(_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+				"packet TEXT, packet_type INTEGER)");
 	}
 	
 	public int getId(Cursor c) {
