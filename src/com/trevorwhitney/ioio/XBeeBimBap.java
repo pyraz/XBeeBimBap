@@ -13,8 +13,12 @@ import ioio.lib.api.Uart;
 import ioio.lib.api.exception.ConnectionLostException;
 import ioio.lib.util.IOIOLooper;
 import ioio.lib.util.android.IOIOActivity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
@@ -59,6 +63,22 @@ public class XBeeBimBap extends IOIOActivity {
 	    }
 	}
 	
+	public boolean onCreateOptionsMenu(Menu menu) {
+		new MenuInflater(this).inflate(R.menu.main_option, menu);
+		
+		return super.onCreateOptionsMenu(menu);
+	}
+	
+	public boolean onOptionsItemSelected(MenuItem item) {
+		if (item.getItemId() == R.id.view_saved_packets) {
+			Intent i = new Intent(XBeeBimBap.this, ViewSavedPackets.class);
+			
+			startActivity(i);
+		}
+		
+		return super.onOptionsItemSelected(item);
+	}
+	
 	final Runnable updatePacketsList = new Runnable() {
 		public void run() {
 			if (currentPacket != null) {
@@ -74,6 +94,17 @@ public class XBeeBimBap extends IOIOActivity {
 		}
 	};
 	
+	public void makeToast(final String message) {
+		Runnable toast = new Runnable() {
+			public void run() {
+				Toast.makeText(getApplicationContext(), 
+						message,
+						Toast.LENGTH_LONG).show();
+			}
+		};
+		handler.post(toast);
+	}
+	
 	private OnCheckedChangeListener logDataListener = new
 			OnCheckedChangeListener() {
 
@@ -84,7 +115,6 @@ public class XBeeBimBap extends IOIOActivity {
 				}
 	
 	};
-	
 	
 	
 	class Looper implements IOIOLooper {
@@ -146,17 +176,13 @@ public class XBeeBimBap extends IOIOActivity {
 
 		@Override
 		public void disconnected() {
-			Toast.makeText(getApplicationContext(), 
-					"Please reconnect IOIO device",
-					Toast.LENGTH_LONG).show();
+			makeToast("No longer recording XBee data");
 			enableUi(false);
 		}
 
 		@Override
 		public void incompatible() {
-			Toast.makeText(getApplicationContext(), 
-					"Incompatible IOIO device detected",
-					Toast.LENGTH_LONG).show();
+			makeToast("Incompatible IOIO device detected");
 		}
 	}
 

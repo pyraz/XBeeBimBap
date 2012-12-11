@@ -44,14 +44,14 @@ public class XBeePacketHelper extends SQLiteOpenHelper {
 		String[] args = {id};
 		
 		cv.put("packet", convertPacketToString(packet));
-		cv.put("api_id", type.apiId());
+		cv.put("packet_type", type.apiId());
 		
 		getWritableDatabase().update("xbee_packets", cv, "_id=?", args);
 	}
 	
 	public Cursor getAll() {
 		return getReadableDatabase().rawQuery("SELECT _id, packet, " +
-				"api_id FROM xbee_packets", null);
+				"packet_type FROM xbee_packets", null);
 	}
 	
 	public int getId(Cursor c) {

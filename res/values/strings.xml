@@ -8,4 +8,5 @@
     <string name="logging_data">
     		Logging Data&#8230;Click to Stop
     </string>
+    <string name="view_saved_packets">View Saved Packets</string>
 </resources>
