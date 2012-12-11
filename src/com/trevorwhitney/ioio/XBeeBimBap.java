@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.trevorwhitney.ioio.domain.XBeePacket;
+import com.trevorwhitney.ioio.persistence.XBeePacketHelper;
 
 import ioio.lib.api.IOIO;
 import ioio.lib.api.Uart;
@@ -16,13 +17,15 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.widget.ArrayAdapter;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
 public class XBeeBimBap extends IOIOActivity {
-	TextView ioioMessage;
+	Boolean logging = false;
 	ToggleButton logData;
 	ListView data;
 	String packetString = "";
@@ -30,14 +33,15 @@ public class XBeeBimBap extends IOIOActivity {
 	List<XBeePacket> packets = new ArrayList<XBeePacket>();
 	ArrayAdapter<XBeePacket> packetsAdapter = null;
 	XBeePacket currentPacket = null;
+	XBeePacketHelper helper = new XBeePacketHelper(this);
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
 	    setContentView(R.layout.main);
 	    
-	    //ioioMessage = (TextView)findViewById(R.id.ioio_message);
 	    logData = (ToggleButton)findViewById(R.id.log_data);
+	    logData.setOnCheckedChangeListener(logDataListener);
 	    data = (ListView)findViewById(R.id.data);
 	    
 	    packetsAdapter = new ArrayAdapter<XBeePacket>(this,
@@ -47,7 +51,7 @@ public class XBeeBimBap extends IOIOActivity {
 			Integer[] samplePacket = {126, 0, 19, 129, 0, 2, 23, 0, 72, 101, 108, 
 			    108, 111, 32, 102, 114, 111, 109, 32, 50, 13, 10, 52};
 			XBeePacket sampleXBeePacket = new XBeePacket(samplePacket);
-			packets.add(sampleXBeePacket);
+			packetsAdapter.add(sampleXBeePacket);
 	
 	    enableUi(false);
 	    
@@ -60,12 +64,30 @@ public class XBeeBimBap extends IOIOActivity {
 	final Runnable updatePacketsList = new Runnable() {
 		public void run() {
 			if (currentPacket != null) {
-				packets.add(currentPacket);
-				packetsAdapter.notifyDataSetChanged();
+				packetsAdapter.add(currentPacket);
+				
+				if (logging == true) {
+					helper.insert(currentPacket.getPacket(), 
+							currentPacket.getType());
+				}
+				
 				currentPacket = null;
 			}
 		}
 	};
+	
+	private OnCheckedChangeListener logDataListener = new
+			OnCheckedChangeListener() {
+
+				@Override
+				public void onCheckedChanged(CompoundButton buttonView,
+						boolean isChecked) {
+					logging = isChecked;
+				}
+	
+	};
+	
+	
 	
 	class Looper implements IOIOLooper {
 		

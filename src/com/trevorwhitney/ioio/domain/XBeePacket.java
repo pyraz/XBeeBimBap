@@ -1,15 +1,19 @@
 package com.trevorwhitney.ioio.domain;
 
+import java.util.ArrayList;
+
 import com.trevorwhitney.ioio.exception.InvalidPacketException;
 
 public class XBeePacket {
 	Integer[] packet;
 	XBeeResponse response;
+	XBeePacketType type;
 	
 	public XBeePacket(Integer[] packet) {
 		this.packet = packet;
 		try {
-			this.response = XBeeResponseFactory.getInstance(packet);
+			response = XBeeResponseFactory.getInstance(packet);
+			type = XBeePacketType.getTypeFromId(response.getApiId());
 		} catch (InvalidPacketException e) {
 			e.printStackTrace();
 		}
@@ -34,5 +38,17 @@ public class XBeePacket {
 			packetString += "]\n";
 		}
 		return packetString;
+	}
+	
+	public Integer[] getPacket() {
+		return packet;
+	}
+
+	public XBeeResponse getResponse() {
+		return response;
+	}
+
+	public XBeePacketType getType() {
+		return type;
 	}
 }
