@@ -9,11 +9,23 @@
 		android:layout_height="0dp"
 		android:layout_gravity="center"
 		android:layout_weight="1" />
-	<ToggleButton
-		android:id="@+id/log_data"
-		android:layout_width="wrap_content"
+	<LinearLayout 
+		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:layout_gravity="center"
-		android:textOff="@string/log_data"
-		android:textOn="@string/logging_data" />
+		android:orientation="horizontal"
+		android:gravity="center" >
+		<ToggleButton
+			android:id="@+id/log_data"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:textOff="@string/log_data"
+			android:textOn="@string/logging_data" />
+		<ToggleButton
+			android:id="@+id/store_location"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:textOff="@string/store_location"
+			android:textOn="@string/storing_location"
+			android:layout_marginLeft="4dip" />
+	</LinearLayout>
 </LinearLayout>

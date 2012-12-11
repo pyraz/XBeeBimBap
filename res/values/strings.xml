@@ -10,4 +10,6 @@
     </string>
     <string name="view_saved_packets">View Saved Packets</string>
     <string name="clear_database">Clear Database</string>
+    <string name="store_location">Store Location</string>
+    <string name="storing_location">Storing Location</string>
 </resources>

@@ -14,6 +14,9 @@ import ioio.lib.api.exception.ConnectionLostException;
 import ioio.lib.util.IOIOLooper;
 import ioio.lib.util.android.IOIOActivity;
 import android.content.Intent;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.Menu;
@@ -29,22 +32,33 @@ import android.widget.ToggleButton;
 public class XBeeBimBap extends IOIOActivity {
 	Boolean logging = false;
 	ToggleButton logData;
+	ToggleButton storeLocation;
 	ListView data;
 	String packetString = "";
 	Handler handler = new Handler();
 	List<XBeePacket> packets = new ArrayList<XBeePacket>();
 	ArrayAdapter<XBeePacket> packetsAdapter = null;
 	XBeePacket currentPacket = null;
-	XBeePacketHelper helper = new XBeePacketHelper(this);
+	XBeePacketHelper helper = null;
+	LocationManager locMgr = null;
+	Double lat = null;
+	Double lon = null;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
 	    setContentView(R.layout.main);
 	    
+	    helper = new XBeePacketHelper(this);
+	    
 	    logData = (ToggleButton)findViewById(R.id.log_data);
 	    logData.setOnCheckedChangeListener(logDataListener);
+	    
+	    storeLocation = (ToggleButton)findViewById(R.id.store_location);
+	    storeLocation.setOnCheckedChangeListener(storeLocationListener);
+	    
 	    data = (ListView)findViewById(R.id.data);
+	    locMgr = (LocationManager)getSystemService(LOCATION_SERVICE);
 	    
 	    packetsAdapter = new ArrayAdapter<XBeePacket>(this,
 	    		android.R.layout.simple_list_item_1, packets);
@@ -61,6 +75,13 @@ public class XBeeBimBap extends IOIOActivity {
 	    	Toast.makeText(getApplicationContext(), "Please connect IOIO device",
 						Toast.LENGTH_LONG).show();
 	    }
+	}
+	
+	@Override
+	public void onPause() {
+		locMgr.removeUpdates(onLocationChange);
+		
+		super.onPause();
 	}
 	
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -86,7 +107,7 @@ public class XBeeBimBap extends IOIOActivity {
 				
 				if (logging == true) {
 					helper.insert(currentPacket.getPacket(), 
-							currentPacket.getType());
+							currentPacket.getType(), lat, lon);
 				}
 				
 				currentPacket = null;
@@ -114,6 +135,53 @@ public class XBeeBimBap extends IOIOActivity {
 					logging = isChecked;
 				}
 	
+	};
+	
+	private OnCheckedChangeListener storeLocationListener = new
+			OnCheckedChangeListener() {
+		
+		@Override
+		public void onCheckedChanged(CompoundButton buttonView,
+				boolean isChecked) {
+			if (isChecked) {
+				// get lat and lon
+				locMgr.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 
+						0, onLocationChange);
+			}
+			else {
+				locMgr.removeUpdates(onLocationChange);
+				lat = null;
+				lon = null;
+			}
+		}
+	};
+	
+	LocationListener onLocationChange = new LocationListener() {
+
+		@Override
+		public void onLocationChanged(Location location) {
+			lat = location.getLatitude();
+			lon = location.getLongitude();
+		}
+
+		@Override
+		public void onProviderDisabled(String provider) {
+			// required by interface
+			
+		}
+
+		@Override
+		public void onProviderEnabled(String provider) {
+			// required by interface
+			
+		}
+
+		@Override
+		public void onStatusChanged(String provider, int status, Bundle extras) {
+			// required by interface
+			
+		}
+		
 	};
 	
 	
